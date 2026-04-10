@@ -45,7 +45,7 @@ app.add_handler(CallbackQueryListenHandler(listen_registry))
 from pyrogram import filters
 
 from pyrolistener.exceptions import ListenTimeoutError
-from pyrolistener.listener import listen_message
+from pyrolistener.listeners import listen_message
 
 @app.on_message(filters.command("age"))
 async def ask_age(client, message):
