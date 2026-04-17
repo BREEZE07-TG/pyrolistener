@@ -37,7 +37,7 @@ async def listen_callback_query(
 
     return await _listen(
         request,
-        listen_registry.remove_message_request,
+        listen_registry.remove_callback_query_request,
         timeout
     )
 
@@ -73,6 +73,6 @@ async def listen_raw_update(
 
     return await _listen(
         request,
-        listen_registry.remove_message_request,
+        listen_registry.remove_raw_update_request,
         timeout
     )
