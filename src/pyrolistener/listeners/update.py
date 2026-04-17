@@ -11,6 +11,14 @@ from ..responses import (
 )
 
 
+async def _listen(request, remover, timeout):
+    try:
+        return await asyncio.wait_for(request, timeout)
+    except asyncio.TimeoutError:
+        raise ListenTimeoutError from None
+    finally:
+        remover(request)
+
 async def listen_callback_query(
     listen_registry: ListenRegistry,
     *,
@@ -27,14 +35,11 @@ async def listen_callback_query(
         filters=filters
     )
 
-    try:
-        response = await asyncio.wait_for(request, timeout)
-    except TimeoutError:
-        raise ListenTimeoutError from None
-    finally:
-        listen_registry.remove_callback_query_request(request)
-
-    return response
+    return await _listen(
+        request,
+        listen_registry.remove_message_request,
+        timeout
+    )
 
 
 async def listen_message(
@@ -53,14 +58,11 @@ async def listen_message(
         filters=filters
     )
 
-    try:
-        response = await asyncio.wait_for(request, timeout)
-    except TimeoutError:
-        raise ListenTimeoutError from None
-    finally:
-        listen_registry.remove_message_request(request)
-
-    return response
+    return await _listen(
+        request,
+        listen_registry.remove_message_request,
+        timeout
+    )
 
 async def listen_raw_update(
     listen_registry: ListenRegistry,
@@ -69,11 +71,8 @@ async def listen_raw_update(
 ) -> RawUpdateListenResponse:
     request = listen_registry.raw_update_request()
 
-    try:
-        response = await asyncio.wait_for(request, timeout)
-    except TimeoutError:
-        raise ListenTimeoutError from None
-    finally:
-        listen_registry.remove_raw_update_request(request)
-
-    return response
+    return await _listen(
+        request,
+        listen_registry.remove_message_request,
+        timeout
+    )
